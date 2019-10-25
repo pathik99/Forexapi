@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:file="http://www.mulesoft.org/schema/mule/file" xmlns:http="http://www.mulesoft.org/schema/mule/http"
+	xmlns="http://www.mulesoft.org/schema/mule/core"
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/file http://www.mulesoft.org/schema/mule/file/current/mule-file.xsd">
+	<flow name="myapi-fileFlow-Job-2" doc:id="588e2a40-381d-48a1-95ea-d3e806e1dd69" >
+		<scheduler doc:name="Scheduler" doc:id="9d290d03-7fa1-49ff-bff1-432001345257" >
+			<scheduling-strategy >
+				<cron expression="${Schedular.Job2}" />
+			</scheduling-strategy>
+		</scheduler>
+		<http:request method="GET" doc:name="ForexapiCall" doc:id="e992aeb2-91a9-44bb-8f54-0b71932ee0af" url="http://localhost:8081/api/currencyconversion" />
+		<file:write doc:name="WriteFileToFileRepo" doc:id="ff8abe8e-0585-46ad-95ce-9df8d4af9c98" path='#["C:/fileRepo/output/" ++ "CurrencyRecords_" ++ (now() as String{format: "yyyyMMddHHmmss" } default "") ++ ".json"]' />
+		<logger level="INFO" doc:name="Logger" doc:id="58257e0c-4838-4f02-a477-49ee40620feb" />
+	</flow>
+</mule>

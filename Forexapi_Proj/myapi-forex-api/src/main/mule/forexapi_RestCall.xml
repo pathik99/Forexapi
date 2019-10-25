@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:http="http://www.mulesoft.org/schema/mule/http" xmlns="http://www.mulesoft.org/schema/mule/core"
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd">
+	<flow name="forexapi_RestCallQueryParams" doc:id="fd0128d9-1394-43c9-af6f-7ce19058e4c0" >
+		<until-successful maxRetries="3" doc:name="Until Successful" doc:id="860351e0-c9f0-4165-9b2d-082747db0986" >
+			<logger level="INFO" doc:name="Logger" doc:id="a1197649-0745-4824-892f-4de49bf48b4a" />
+			<http:request method="GET" doc:name="RequestQueryParams" doc:id="243e99b8-3423-4c05-bfe8-fb10e7b4eafc" url="${http.request.path}">
+			<http:query-params><![CDATA[#[output application/java
+---
+{
+	"symbols" : upper(attributes.queryParams.targetCcy),
+	"base" : upper(attributes.queryParams.baseCcy)
+}]]]></http:query-params>
+		</http:request>
+			<logger level="INFO" doc:name="Logger" doc:id="b0ebdab4-9d73-46ec-bffb-c42637f40490" />
+		</until-successful>
+	</flow>
+	<flow name="forexapi_RestCallUriParams" doc:id="3b2579e2-815d-40dd-8a97-4d6787f332ad" >
+		<until-successful maxRetries="3" doc:name="Until Successful" doc:id="81c1bdf4-8f1b-45f4-9974-24959e6db7e0" >
+			<logger level="INFO" doc:name="Logger" doc:id="b90686d5-a9af-4afa-9447-9eaae75e2deb" />
+			<http:request method="GET" doc:name="RequestUriParams" doc:id="4f83b855-4c4e-4572-98d8-4d65b76f05c0" url="${http.request.path}">
+				<http:query-params ><![CDATA[#[output application/java
+---
+{
+	"symbols" : upper(attributes.uriParams.targetCurrency),
+	"base" : upper(attributes.uriParams.baseCurrency)
+}]]]></http:query-params>
+			</http:request>
+			<logger level="INFO" doc:name="Logger" doc:id="e357dcec-51ba-4b14-8573-44f3ebe70be8" />
+		</until-successful>
+	</flow>
+</mule>

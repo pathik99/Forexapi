@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<domain:mule-domain
+        xmlns:jms="http://www.mulesoft.org/schema/mule/jms"
+        xmlns:http="http://www.mulesoft.org/schema/mule/http"
+        xmlns="http://www.mulesoft.org/schema/mule/core"
+        xmlns:domain="http://www.mulesoft.org/schema/mule/ee/domain"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xsi:schemaLocation="
+               http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+               http://www.mulesoft.org/schema/mule/ee/domain http://www.mulesoft.org/schema/mule/ee/domain/current/mule-domain-ee.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/jms http://www.mulesoft.org/schema/mule/jms/current/mule-jms.xsd">
+	<http:listener-config name="forexapi_HTTP_Listener_config" doc:name="HTTP Listener config" doc:id="6cf02b03-d538-43dc-9592-e7850dec0712" >
+		<http:listener-connection host="${http.host}" port="${http.port}" />
+	</http:listener-config>
+	<jms:config name="forexapi_JMS_Config" doc:name="JMS Config" doc:id="97bf6d69-a448-48cf-ae4a-41329d1e92d7" >
+		<jms:active-mq-connection username="${JMS.Userid}" password="${JMS.Password}" >
+			<jms:factory-configuration brokerUrl="${JMS.Url}" />
+		</jms:active-mq-connection>
+	</jms:config>
+	<configuration-properties doc:name="Configuration properties" doc:id="ca8f6ae0-ba91-4f84-b7d3-f2120b71afb4" file="forexapi.properties" />
+
+
+    <!-- configure here resource to be shared within the domain -->
+
+</domain:mule-domain>

@@ -1,0 +1,125 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xmlns="http://www.mulesoft.org/schema/mule/core"
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
+	<error-handler name="forexapi-globalerrorhandlerHttp_Flow" doc:id="27014343-a5c8-40df-8739-0b3d81f6907f" >
+		<on-error-propagate enableNotifications="true" logException="true" doc:name="http-400" doc:id="7869b922-871c-40dc-a69d-39deb56fd3bc" type="HTTP:BAD_REQUEST" >
+			<ee:transform doc:name="Transform Message" doc:id="62dd1046-bb1f-46a1-8cd7-3149e20809a1" >
+				<ee:message >
+					<ee:set-payload ><![CDATA[output application/json
+---
+{
+	"Status" : {
+		
+		"Type": error.errorType,
+		"Description": error.cause
+	}
+}]]></ee:set-payload>
+				</ee:message>
+			</ee:transform>
+			<logger level="INFO" doc:name="Logger" doc:id="eb869fda-1111-49a3-945a-ac4ac568ce22" message="#[payload]"/>
+			<flow-ref doc:name="SendEmailAlert" doc:id="7d87466a-0e5e-4dce-a023-bd16f3e673e6" name="forexapi-EmailAlertFlow" />
+		</on-error-propagate>
+		<on-error-propagate enableNotifications="true" logException="true" doc:name="http-404" doc:id="3f7e251b-79d7-488a-b574-ef814ecda063" type="HTTP:NOT_FOUND" >
+			<ee:transform doc:name="Transform Message" doc:id="f67eba75-0a42-4f1d-bed3-8b98c3d62ada" >
+				<ee:message >
+					<ee:set-payload ><![CDATA[output application/json
+---
+{
+	"Status" : {
+		
+		"Type": error.errorType,
+		"Description": error.cause
+	}
+}]]></ee:set-payload>
+				</ee:message>
+			</ee:transform>
+			<logger level="INFO" doc:name="Logger" doc:id="a0c80e1a-0537-42ec-8d4c-e19b41d8a6aa" message="#[payload]"/>
+		</on-error-propagate>
+		<on-error-propagate enableNotifications="true" logException="true" doc:name="http-405" doc:id="173b1aa9-162e-47df-af3b-bbeead754b44" type="HTTP:METHOD_NOT_ALLOWED" >
+			<ee:transform doc:name="Transform Message" doc:id="4e839fb8-139d-4be5-b5ea-3a931cf4633d" >
+				<ee:message >
+					<ee:set-payload ><![CDATA[output application/json
+---
+{
+	"Status" : {
+		
+		"Type": error.errorType,
+		"Description": error.cause
+	}
+}]]></ee:set-payload>
+				</ee:message>
+			</ee:transform>
+			<logger level="INFO" doc:name="Logger" doc:id="b51efea5-4edb-42fe-a1a6-4c8049110c28" message="#[payload]"/>
+		</on-error-propagate>
+		<on-error-propagate enableNotifications="true" logException="true" doc:name="http-406" doc:id="f6dd49cc-64db-4362-9ddd-8277b0a900aa" type="HTTP:NOT_ACCEPTABLE" >
+			<ee:transform doc:name="Transform Message" doc:id="4f6f8b50-c344-4c79-bee9-f2b70026bd0e" >
+				<ee:message >
+					<ee:set-payload ><![CDATA[output application/json
+---
+{
+	"Status" : {
+		
+		"Type": error.errorType,
+		"Description": error.cause
+	}
+}]]></ee:set-payload>
+				</ee:message>
+			</ee:transform>
+			<logger level="INFO" doc:name="Logger" doc:id="2eac398b-a303-48e1-8b7a-952e415cfbf2" message="#[payload]"/>
+		</on-error-propagate>
+		<on-error-propagate enableNotifications="true" logException="true" doc:name="http-415" doc:id="5f6b5733-63ee-4734-a492-a26b0a45c833" type="HTTP:UNSUPPORTED_MEDIA_TYPE" >
+			<ee:transform doc:name="Transform Message" doc:id="a9362fc3-9174-42b6-be5a-ad9856d938d9" >
+				<ee:message >
+					<ee:set-payload ><![CDATA[output application/json
+---
+{
+	"Status" : {
+		
+		"Type": error.errorType,
+		"Description": error.cause
+	}
+}]]></ee:set-payload>
+				</ee:message>
+			</ee:transform>
+			<logger level="INFO" doc:name="Logger" doc:id="5903ffba-b101-44c8-86fb-5df54d3d80dd" message="#[payload]"/>
+		</on-error-propagate>
+		<on-error-propagate enableNotifications="true" logException="true" doc:name="http-500" doc:id="b76805bc-8034-47e2-8519-f237a8c9efdc" type="HTTP:INTERNAL_SERVER_ERROR" >
+			<ee:transform doc:name="Transform Message" doc:id="6f578def-71e6-48eb-b2ec-d338b34215af" >
+				<ee:message >
+					<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+{
+	"Status" : {
+		
+		"Type": error.errorType,
+		"Description": error.cause
+	}
+}]]></ee:set-payload>
+				</ee:message>
+			</ee:transform>
+			<logger level="INFO" doc:name="Logger" doc:id="81233721-cf6f-44b8-895c-576f50ddb47d" message="#[payload]"/>
+		</on-error-propagate>
+		<on-error-propagate enableNotifications="true" logException="true" doc:name="Any" doc:id="1484fc70-0e46-412c-bac1-03e9ffec7af6" type="ANY" >
+			<ee:transform doc:name="Transform Message" doc:id="c4c98e70-2eca-4eb6-8d21-d50116bdf9c6" >
+				<ee:message >
+					<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+{
+	"Status" : {
+		
+		"Type": error.errorType,
+		"Description": error.cause
+	}
+}]]></ee:set-payload>
+				</ee:message>
+			</ee:transform>
+			<logger level="INFO" doc:name="Logger" doc:id="4df9c7b7-a748-4be5-974b-51fb142dbe37" message="#[payload]"/>
+			<flow-ref doc:name="SendEmailAlert" doc:id="0f3a8c2c-8e8d-493d-bf7a-921e8995e1cc" name="forexapi-EmailAlertFlow" />
+		</on-error-propagate>
+	</error-handler>
+</mule>

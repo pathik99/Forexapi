@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:email="http://www.mulesoft.org/schema/mule/email" xmlns:file="http://www.mulesoft.org/schema/mule/file"
+	xmlns="http://www.mulesoft.org/schema/mule/core"
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/file http://www.mulesoft.org/schema/mule/file/current/mule-file.xsd
+http://www.mulesoft.org/schema/mule/email http://www.mulesoft.org/schema/mule/email/current/mule-email.xsd">
+	<email:smtp-config name="Email_SMTP" doc:name="Email SMTP" doc:id="ad6945ae-c5eb-4da6-ac6c-4c3ad1cb39d0" >
+		<email:smtp-connection host="smtp.gmail.com" port="587" user="pathikgandhi3333@gmail.com" password="test" >
+			<email:properties >
+				<email:property key="mail.smtp.starttls.enable" value="true" />
+			</email:properties>
+		</email:smtp-connection>
+	</email:smtp-config>
+	<flow name="forexapi-EmailAlertFlow" doc:id="10682b4b-e5e4-4da6-8b53-063d62be0357" >
+		<file:write doc:name="WriteErrorLogFile" doc:id="fd32d47b-9c7d-44b5-8d6c-3cce0e7e48bb" path='#["C:/fileRepo/Error/" ++ "Error_" ++ (now() as String{format: "yyyyMMddHHmmss" } default "") ++ ".log"]' />
+		<email:send doc:name="SendEmailAlert" doc:id="68e7285b-c30e-4f33-99ad-c69906a03048" fromAddress="pathikgandhi3333@gmail.com" subject='#["Production Error Alert " ++ now()]' config-ref="Email_SMTP">
+			<email:to-addresses>
+				<email:to-address value="pathik.gandhi@itechtions.com" />
+			</email:to-addresses>
+			<email:body contentType="text/plain" />
+		</email:send>
+	</flow>
+</mule>

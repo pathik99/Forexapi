@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:http="http://www.mulesoft.org/schema/mule/http" xmlns:file="http://www.mulesoft.org/schema/mule/file"
+	xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core"
+	xmlns:jms="http://www.mulesoft.org/schema/mule/jms" xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/jms http://www.mulesoft.org/schema/mule/jms/current/mule-jms.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd
+http://www.mulesoft.org/schema/mule/file http://www.mulesoft.org/schema/mule/file/current/mule-file.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd">
+	<import doc:name="Import" doc:id="616d660f-3891-4a73-ad48-898c9e292b2e" file="forexapi-globalerrorhandlerJMS.xml" />
+	<configuration doc:name="Configuration" doc:id="fa12282c-0126-4155-a5d0-685807e75856" defaultErrorHandler-ref="forexapi-globalerrorhandlerJMSError_Handler" />
+	<import doc:name="Import" doc:id="80a4e6ce-4e8c-49cd-a677-19b649c4b83c" file="forexapi-EmailAlert.xml" />
+	<flow name="myapi-vmFlow" doc:id="4b95de59-ac8f-48ff-8a0d-86416a294dc4" >
+		<jms:listener doc:name="Listener" doc:id="07f83edb-546f-44fa-ae25-8f95d9dfdb71" config-ref="forexapi_JMS_Config" destination="${JMS.Queue}">
+		</jms:listener>
+		<ee:transform doc:name="XMLtoCSV" doc:id="eed33937-0557-460d-a180-bf97a381c343" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/csv headerLineNumber = 0 , header = true
+---
+
+payload.root.rates pluck(value, key, index) -> {
+	Base: payload.root.base,
+	Target: key,
+	Value: value
+	
+}]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<file:write doc:id="36f2b129-7619-4a7d-9f3c-274cd512de33" path='#["C:/fileRepo/archived/" ++ "CurrencyRecords_" ++ (now() as String{format: "yyyyMMddHHmmss" } default "") ++ ".csv"]' doc:name="WriteToArchived"/>
+		<logger level="INFO" doc:name="Logger" doc:id="70594e53-eb33-4464-a55a-b974f25382b3" />
+	</flow>
+</mule>

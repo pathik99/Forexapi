@@ -1,0 +1,21 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<types:mule xmlns:types="http://www.mulesoft.org/schema/mule/types">
+  <types:catalog>
+    <types:type name="myxml" format="xml">
+      <types:example format="xml" element="root" location="examples/xmlSample.xml"/>
+    </types:type>
+    <types:type name="mycsv" format="csv">
+      <types:shape format="weave"><![CDATA[%dw 2.0
+
+type mycsv = Array<{|  Base: String,   Target: String,   Value: String|}>
+
+]]></types:shape>
+      <types:properties>
+        <types:property name="headerLineNumber" value="0"/>
+        <types:property name="header" value="true"/>
+        <types:property name="isQuotedString" value="false"/>
+      </types:properties>
+    </types:type>
+  </types:catalog>
+  <types:enrichment select="#eed33937-0557-460d-a180-bf97a381c343"/>
+</types:mule>

@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:file="http://www.mulesoft.org/schema/mule/file" xmlns:http="http://www.mulesoft.org/schema/mule/http"
+	xmlns="http://www.mulesoft.org/schema/mule/core"
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/file http://www.mulesoft.org/schema/mule/file/current/mule-file.xsd">
+	<import doc:name="Import" doc:id="a6821008-7ce3-4a34-94d4-e02a0d0e7287" file="forexapi-globalerrorhandlerFile.xml" />
+	<configuration doc:name="Configuration" doc:id="35b84c86-6294-4dfc-84b1-8928fbcc1854" defaultErrorHandler-ref="forexapi-globalerrorhandlerFileError_Handler" />
+	<import doc:name="Import" doc:id="0d05ec1a-ac7a-4125-a88c-303216fab65c" file="forexapi-EmailAlert.xml" />
+	<flow name="myapi-fileFlow-Job-1" doc:id="ab8be4f9-64b4-4b5d-867d-ae58cfa84312" >
+		<scheduler doc:name="Scheduler" doc:id="f0bb3b73-17dc-4270-ac57-224d9bceb9d1" >
+			<scheduling-strategy >
+				<cron expression="${Schedular.Job1}"/>
+			</scheduling-strategy>
+		</scheduler>
+		<http:request method="GET" doc:name="ForexapiCall" doc:id="3b3e7cbb-2ae9-4e06-8b10-9e300c29f7b9" url="http://localhost:8081/api/currencyconversion"/>
+		<file:write doc:id="ae4fc1a6-9849-4b8f-af86-95050a183744" path='#["C:/fileRepo/output/" ++ "CurrencyRecords_" ++ (now() as String{format: "yyyyMMddHHmmss" } default "") ++ ".json"]' doc:name="WriteFileToFileRepo"/>
+		<logger level="INFO" doc:name="Logger" doc:id="13ccbb3e-5b37-4401-a2b2-71012ed9af83" />
+	</flow>
+</mule>

@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xmlns="http://www.mulesoft.org/schema/mule/core"
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
+	<flow name="get:\currencyconversion:forexapi-config" doc:id="b2598959-ff39-4b31-91f9-c244ecfc89e6" >
+		<set-variable value="#[%dw 2.0
+output application/json
+---
+upper(attributes.queryParams.outputType default 'NA')]" doc:name="OutputType" doc:id="a3e69b83-df7c-4fc5-85e8-e46fe95d65fe" variableName="outputType"/>
+		<flow-ref doc:name="RestCallQueryParams" doc:id="05d4cb27-b34f-4614-86da-e8e998efca5d" name="forexapi_RestCallQueryParams"/>
+		<choice doc:name="Choice" doc:id="7bb008f4-bce3-4750-ab65-7d7cf0c968c1" >
+			<when expression="#[vars.outputType == 'XML']">
+				<ee:transform doc:name="Transform Message" doc:id="e7ff50d2-ec89-4e81-ac41-3564cfc26188" >
+					<ee:message >
+						<ee:set-payload ><![CDATA[%dw 2.0
+output application/xml
+---
+{
+	root: payload
+}]]></ee:set-payload>
+					</ee:message>
+				</ee:transform>
+			</when>
+			<when expression="#[vars.outputType == 'JSON']">
+				<ee:transform doc:name="Transform Message" doc:id="fd3b32cd-9d91-4e0c-9544-3661d85c596e" >
+					<ee:message >
+						<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+payload]]></ee:set-payload>
+					</ee:message>
+				</ee:transform>
+			</when>
+			<when expression="#[vars.outputType != 'JSON' and vars.outputType != 'XML' and vars.outputType != 'NA']">
+				<ee:transform doc:name="Transform Message" doc:id="3d69e09f-9587-472e-9e03-7248aa4ecd93" >
+					<ee:message >
+						<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+"Your Entry " ++ (vars.outputType default "Not Valid") ++ " is invalid, please select XML or JSON"]]></ee:set-payload>
+					</ee:message>
+				</ee:transform>
+			</when>
+			<otherwise >
+				<ee:transform doc:name="Transform Message" doc:id="efa6e94e-de96-4bf2-aa47-ea870e18ba34" >
+					<ee:message >
+						<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+payload]]></ee:set-payload>
+					</ee:message>
+				</ee:transform>
+			</otherwise>
+		</choice>
+		<logger level="INFO" doc:name="Logger" doc:id="60d5a03c-c172-483f-ad07-ab0ef5a9c9b3" />
+	</flow>
+</mule>

@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:jms="http://www.mulesoft.org/schema/mule/jms" xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core"
+	xmlns:file="http://www.mulesoft.org/schema/mule/file"
+	xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/file http://www.mulesoft.org/schema/mule/file/current/mule-file.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd
+http://www.mulesoft.org/schema/mule/jms http://www.mulesoft.org/schema/mule/jms/current/mule-jms.xsd">
+	<import doc:name="Import" doc:id="31b7daae-c2d0-4c59-8a13-0d74a8765edb" file="forexapi-globalerrorhandlerJMS.xml" />
+	<configuration doc:name="Configuration" doc:id="c4d2a6aa-0b5a-4450-89df-eebec1fe0355" defaultErrorHandler-ref="forexapi-globalerrorhandlerJMSError_Handler" />
+	<import doc:name="Import" doc:id="df90cbad-1fb9-4c0d-9b6d-c3a57561319c" file="forexapi-EmailAlert.xml" />
+	<flow name="myapi-filesFlow" doc:id="7fad72e5-a69a-4a36-aca2-3a38d49185bc" >
+		<file:listener doc:name="On New or Updated File" doc:id="d86c40cc-4e66-4a8f-a412-7f7e36705e45" directory="${File.Pickup}">
+			<scheduling-strategy >
+				<fixed-frequency frequency="60" timeUnit="SECONDS" />
+			</scheduling-strategy>
+		</file:listener>
+		<ee:transform doc:name="JSON to XML" doc:id="815979f4-cf9e-4241-aa68-e4ad4485ebde" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/xml
+---
+{
+	root: payload
+}]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<jms:publish doc:id="0f868970-d63a-4339-af5a-4e986d6abfc9" destination="${JMS.Queue}" doc:name="VMQueue" config-ref="forexapi_JMS_Config"/>
+		<file:move doc:name="MoveToProcess" doc:id="df42cecc-57a3-4ea1-8338-6d503e657879" sourcePath='#["C:/fileRepo/output/" ++ attributes.fileName]' targetPath="${File.Dropoff}"/>
+		<logger level="INFO" doc:name="Logger" doc:id="51b20e09-6063-45ba-86db-6f51080d8e86" />
+	</flow>
+</mule>

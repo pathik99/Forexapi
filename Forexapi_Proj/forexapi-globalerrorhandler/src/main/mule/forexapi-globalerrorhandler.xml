@@ -1,0 +1,113 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xmlns="http://www.mulesoft.org/schema/mule/core"
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
+	<error-handler name="forexapi-globalerrorhandler_Flow" doc:id="585f5159-734a-4316-83cc-dc4a66d58046" >
+		<on-error-propagate enableNotifications="true" logException="true" doc:name="http-400" doc:id="04e94682-20da-4b0e-92de-d3c4bb51a6c5" type="APIKIT:BAD_REQUEST">
+			<ee:transform doc:name="Transform Message" doc:id="aee76860-a917-4ea4-b7ca-517debe37494" >
+				<ee:message >
+					<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+{
+	"Status" : {
+		
+		"Code": "400",
+		"Type": "Http bad request",
+		"Description": error.cause
+	}
+}]]></ee:set-payload>
+				</ee:message>
+			</ee:transform>
+			<flow-ref doc:name="SendEmailAlert" doc:id="ede7e5a1-39e4-4f96-b834-841481bd8751" name="forexapi-EmailAlertFlow"/>
+		</on-error-propagate>
+		<on-error-propagate enableNotifications="true" logException="true" doc:name="http-404" doc:id="db607c4b-8b26-4124-bd70-ed459fd39b40" type="APIKIT:NOT_FOUND">
+			<ee:transform doc:name="Transform Message" doc:id="dded281b-f32d-4121-9aaf-7b3b8587ea02" >
+				<ee:message >
+					<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+{
+	"Status" : {
+		
+		"Code": "404",
+		"Type": "Resource Not Found",
+		"Description": error.cause
+	}
+}]]></ee:set-payload>
+				</ee:message>
+			</ee:transform>
+		</on-error-propagate>
+		<on-error-propagate enableNotifications="true" logException="true" doc:name="http-405" doc:id="1a479ad7-8ea5-4819-a7b2-b5f38258eec5" type="APIKIT:METHOD_NOT_ALLOWED">
+			<ee:transform doc:name="Transform Message" doc:id="7e03a3e9-0c28-46fe-84bd-9c649f736729" >
+				<ee:message >
+					<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+{
+	"Status" : {
+		
+		"Code": "405",
+		"Type": "Method Not Allowed",
+		"Description": error.cause
+	}
+}]]></ee:set-payload>
+				</ee:message>
+			</ee:transform>
+			<flow-ref doc:name="SendEmailAlert" doc:id="feea5bb5-bea9-4076-8fd9-0e4849200d5c" name="forexapi-EmailAlertFlow" />
+		</on-error-propagate>
+		<on-error-propagate enableNotifications="true" logException="true" doc:name="http-406" doc:id="25c6687b-5e11-42b1-825e-0695a2f9948e" type="APIKIT:NOT_ACCEPTABLE">
+			<ee:transform doc:name="Transform Message" doc:id="3df2fbef-f393-4655-a331-3ff563b78e3d" >
+				<ee:message >
+					<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+{
+	"Status" : {
+		
+		"Code": "406",
+		"Type": "Not Acceptable",
+		"Description": error.cause
+	}
+}]]></ee:set-payload>
+				</ee:message>
+			</ee:transform>
+		</on-error-propagate>
+		<on-error-propagate enableNotifications="true" logException="true" doc:name="http-415" doc:id="c2ee3543-466c-4893-afb1-472552afc22b" type="APIKIT:UNSUPPORTED_MEDIA_TYPE">
+			<ee:transform doc:name="Transform Message" doc:id="5febd77e-d96b-4bc8-907e-6fa4cb7ce0ef" >
+				<ee:message >
+					<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+{
+	"Status" : {
+		
+		"Code": "415",
+		"Type": "Unsupported Media Type",
+		"Description": error.cause
+	}
+}]]></ee:set-payload>
+				</ee:message>
+			</ee:transform>
+		</on-error-propagate>
+		<on-error-propagate enableNotifications="true" logException="true" doc:name="http-501" doc:id="9ecb17ee-2ea0-4c40-8661-7757371f7fa7" type="APIKIT:NOT_IMPLEMENTED">
+			<ee:transform doc:name="Transform Message" doc:id="5647e896-4984-4d48-b41d-aad19d6a3aa0" >
+				<ee:message >
+					<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+{
+	"Status" : {
+		
+		"Code": "501",
+		"Type": "Not Implemented",
+		"Description": error.cause
+	}
+}]]></ee:set-payload>
+				</ee:message>
+			</ee:transform>
+		</on-error-propagate>
+	</error-handler>
+</mule>

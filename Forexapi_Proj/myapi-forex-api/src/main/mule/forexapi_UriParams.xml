@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<mule xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:apikit="http://www.mulesoft.org/schema/mule/mule-apikit" xmlns:http="http://www.mulesoft.org/schema/mule/http" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd http://www.mulesoft.org/schema/mule/mule-apikit http://www.mulesoft.org/schema/mule/mule-apikit/current/mule-apikit.xsd 
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
+    <apikit:config name="forexapi-config" api="forexapi.raml" outboundHeadersMapName="outboundHeaders" httpStatusVarName="httpStatus" />
+	<import doc:name="Import" doc:id="ec2f9208-8de9-44bd-9c6c-51cfe6badd27" file="forexapi-globalerrorhandler.xml" />
+	<configuration doc:name="Configuration" doc:id="e4069b37-6cb8-43f7-b268-d419a6b0564c" defaultErrorHandler-ref="forexapi-globalerrorhandler_Flow" />
+	<import doc:name="Import" doc:id="a9a02d59-1396-4270-97ce-f3811036745d" file="forexapi-EmailAlert.xml" />
+	<flow name="forexapi-main">
+        <http:listener path="/api/*" config-ref="forexapi_HTTP_Listener_config" doc:id="93dc4f82-eaa2-46ea-8dfc-e529ec6dafb1">
+            <http:response statusCode="#[vars.httpStatus default 200]">
+                <http:headers><![CDATA[#[vars.outboundHeaders default {}]]]></http:headers>
+            </http:response>
+            <http:error-response statusCode="#[vars.httpStatus default 500]">
+                <http:body><![CDATA[#[payload]]]></http:body>
+                <http:headers><![CDATA[#[vars.outboundHeaders default {}]]]></http:headers>
+            </http:error-response>
+        </http:listener>
+        <logger level="INFO" doc:name="Logger" doc:id="68a52f13-700e-4850-abd4-4b8f17d74f03" />
+		<apikit:router config-ref="forexapi-config" />
+    </flow>
+    <flow name="forexapi-console">
+        <http:listener path="/console/*" config-ref="forexapi_HTTP_Listener_config">
+            <http:response statusCode="#[vars.httpStatus default 200]">
+                <http:headers><![CDATA[#[vars.outboundHeaders default {}]]]></http:headers>
+            </http:response>
+            <http:error-response statusCode="#[vars.httpStatus default 500]">
+                <http:body><![CDATA[#[payload]]]></http:body>
+                <http:headers><![CDATA[#[vars.outboundHeaders default {}]]]></http:headers>
+            </http:error-response>
+        </http:listener>
+        <logger level="INFO" doc:name="Logger" doc:id="4449de33-289c-423a-911a-e9d66d565ee7" />
+		<apikit:console config-ref="forexapi-config" />
+    </flow>
+    <flow name="get:\currencyconversion\baseCcy\(baseCurrency):forexapi-config">
+		<flow-ref doc:name="RestCallForUri" doc:id="30804fcd-171f-4f61-b75c-000e52500bdb" name="forexapi_RestCallUriParams"/>
+		<logger level="INFO" doc:name="Logger" doc:id="86a86488-c165-4171-8371-b4da0f5fc0f5" />
+    </flow>
+    <flow name="get:\currencyconversion\baseCcy\(baseCurrency)\outputType\(oType):forexapi-config" doc:id="dc74f0c4-1d2b-4575-955e-cdf6dd275431" >
+		<set-variable value="#[%dw 2.0
+output application/json
+---
+upper(attributes.uriParams.oType)]" doc:name="OutputFormat" doc:id="ac091da7-2c23-4e55-9e6a-170a5a495e10" variableName="oType"/>
+		<flow-ref doc:name="RestCallForUri" doc:id="315c7623-f430-43e4-a987-b013b730e660" name="forexapi_RestCallUriParams"/>
+		<flow-ref doc:name="OutputFormatCall" doc:id="17a78d61-f060-45cc-91c3-01f761163022" name="outputFormat"/>
+		<logger level="INFO" doc:name="Logger" doc:id="6c7044c9-7ca7-4840-b8d8-6cb928533b0f" />
+	</flow>
+	<flow name="get:\currencyconversion\baseCcy\(baseCurrency)\targetCcy\(targetCurrency)\outputType\(oType):forexapi-config">
+		<set-variable value="#[%dw 2.0
+output application/json
+---
+upper(attributes.uriParams.oType)]" doc:name="OutputFormat" doc:id="68215267-a020-426e-a58e-213871499703" variableName="oType"/>
+		<flow-ref doc:name="RestCallForUri" doc:id="511b8040-8bb1-44a2-987b-f4ff279d3963" name="forexapi_RestCallUriParams"/>
+		<flow-ref doc:name="OutputFormatCall" doc:id="127f9381-0c31-40b3-a782-8ccc6a253a60" name="outputFormat"/>
+		<logger level="INFO" doc:name="Logger" doc:id="49cd8f3e-3cbe-4e0c-9ebb-dd793101810e" />
+    </flow>
+    <flow name="get:\currencyconversion\baseCcy\(baseCurrency)\targetCcy\(targetCurrency):forexapi-config">
+		<flow-ref doc:name="RestCallForUri" doc:id="9e85169c-8ca2-4fb1-b904-62ce7903ac9a" name="forexapi_RestCallUriParams"/>
+		<logger level="INFO" doc:name="Logger" doc:id="a58c5a3c-8889-426f-b3bb-2093bb01b183" />
+    </flow>
+	<sub-flow name="outputFormat" doc:id="3195ad2d-a602-44d7-8c04-fadeab903a32" >
+		<choice doc:name="Choice" doc:id="a43160fa-0e81-4aa1-b43e-b322a287d115" >
+			<when expression="#[vars.oType == 'XML']">
+				<ee:transform doc:name="Transform Message" doc:id="522f2e50-fbcd-4072-be95-5252f95a7a70" >
+					<ee:message >
+						<ee:set-payload ><![CDATA[%dw 2.0
+output application/xml
+---
+{
+	root: payload
+}]]></ee:set-payload>
+					</ee:message>
+				</ee:transform>
+			</when>
+			<when expression="#[vars.oType == 'JSON']">
+				<ee:transform doc:name="Transform Message" doc:id="843aa9eb-b567-4bd9-9397-9379042b0a61" >
+					<ee:message >
+						<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+payload]]></ee:set-payload>
+					</ee:message>
+				</ee:transform>
+			</when>
+			<otherwise >
+				<ee:transform doc:name="Transform Message" doc:id="4ca2c7be-e76f-47bf-8316-e2123a1a3712" >
+					<ee:message >
+						<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+"Your Entry " ++ (vars.oType default "Not Valid") ++ " is invalid, please select XML or JSON"]]></ee:set-payload>
+					</ee:message>
+				</ee:transform>
+			</otherwise>
+		</choice>
+		<logger level="INFO" doc:name="Logger" doc:id="e2367f0f-d75c-4533-ad68-fb0ab8373a06" />
+	</sub-flow>
+</mule>

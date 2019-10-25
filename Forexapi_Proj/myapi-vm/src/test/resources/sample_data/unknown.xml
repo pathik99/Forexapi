@@ -1,0 +1,39 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<root>
+  <base>EUR</base>
+  <rates>
+    <GBP>0.8593</GBP>
+    <HKD>8.7635</HKD>
+    <IDR>15713.09</IDR>
+    <ILS>3.9484</ILS>
+    <DKK>7.4708</DKK>
+    <INR>79.169</INR>
+    <CHF>1.1002</CHF>
+    <MXN>21.4</MXN>
+    <CZK>25.63</CZK>
+    <SGD>1.5203</SGD>
+    <THB>33.804</THB>
+    <HRK>7.4378</HRK>
+    <MYR>4.6709</MYR>
+    <NOK>10.1638</NOK>
+    <CNY>7.9025</CNY>
+    <BGN>1.9558</BGN>
+    <PHP>57.046</PHP>
+    <SEK>10.7311</SEK>
+    <PLN>4.2788</PLN>
+    <ZAR>16.4831</ZAR>
+    <CAD>1.4643</CAD>
+    <ISK>139.3</ISK>
+    <BRL>4.6059</BRL>
+    <RON>4.7584</RON>
+    <NZD>1.7432</NZD>
+    <TRY>6.5047</TRY>
+    <JPY>121.29</JPY>
+    <RUB>71.1373</RUB>
+    <KRW>1309.04</KRW>
+    <USD>1.1173</USD>
+    <HUF>329.98</HUF>
+    <AUD>1.624</AUD>
+  </rates>
+  <date>2019-10-21</date>
+</root>

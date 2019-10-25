@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:http="http://www.mulesoft.org/schema/mule/http" xmlns="http://www.mulesoft.org/schema/mule/core"
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd">
+	<import doc:name="Import" doc:id="b92df996-8c33-42c0-8a0e-b9ad08fdcf28" file="forexapi-globalerrorhandlerHttp.xml" />
+	<configuration doc:name="Configuration" doc:id="dfc19dc0-2fbf-4c91-af65-b4efed2d31e9" defaultErrorHandler-ref="forexapi-globalerrorhandlerHttp_Flow" />
+	<import doc:name="Import" doc:id="52fe8570-41c8-473e-b381-ab5c7d76f610" file="forexapi-EmailAlert.xml" />
+	<flow name="myapi-proxy-apiQueryParams" doc:id="cd03f79a-9889-4137-8ed8-fe73b3065dc9" >
+		<http:listener doc:name="Listener" doc:id="1a994626-40a0-45e8-a827-fd0fa375d389" config-ref="forexapi_HTTP_Listener_config" path="/prc-api/forex">
+			<http:error-response >
+				<http:body ><![CDATA[#[payload]]]></http:body>
+			</http:error-response>
+		</http:listener>
+		<http:request method="GET" doc:name="Request" doc:id="533bbede-e814-48d2-b0bc-9fcff8baa7cd" url="${Proxyapi.Query.Url}">
+			<http:query-params ><![CDATA[#[output application/java
+---
+{
+	"targetCcy" : upper(attributes.queryParams.targetCcy),
+	"baseCcy" : upper(attributes.queryParams.baseCcy)
+}]]]></http:query-params>
+		</http:request>
+		<logger level="INFO" doc:name="Logger" doc:id="212c41a9-9059-43ca-84cf-b5a66983138e" />
+	</flow>
+	<flow name="myapi-proxy-apiUriParams" doc:id="cd8932dc-70a7-48f0-8486-16ff776ed889" >
+		<http:listener doc:name="Listener" doc:id="777e5c90-15e5-4d96-a04d-8769284bc8e1" config-ref="forexapi_HTTP_Listener_config" path="/prc-api/forexData/baseCcy/{bc}/targetCcy/{tc}">
+			<http:error-response >
+				<http:body ><![CDATA[#[payload]]]></http:body>
+			</http:error-response>
+		</http:listener>
+		<http:request method="GET" doc:name="Request" doc:id="367e8551-166b-4921-9029-073bf7d8bc16" url="${Proxyapi.Uri.Url}">
+			<http:uri-params ><![CDATA[#[output application/java
+---
+{
+	"targetCurrency" : upper(attributes.uriParams.tc),
+	"baseCurrency" : upper(attributes.uriParams.bc)
+}]]]></http:uri-params>
+		</http:request>
+		<logger level="INFO" doc:name="Logger" doc:id="fa1f9826-ad6c-4017-b27f-18ace3e3847a" />
+	</flow>
+</mule>
